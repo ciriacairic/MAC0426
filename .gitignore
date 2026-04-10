@@ -1,3 +1,18 @@
 # SQL init scripts (large files, download separately)
 db/postgres/*.sql
 db/mysql/*.sql
+
+# LaTeX compiled files
+*.aux
+*.log
+*.toc
+*.out
+*.pdf
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+*.bbl
+*.blg
+*.nav
+*.snm
+*.vrb
