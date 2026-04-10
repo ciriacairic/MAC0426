@@ -1,0 +1,3 @@
+# SQL init scripts (large files, download separately)
+db/postgres/*.sql
+db/mysql/*.sql
