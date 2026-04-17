@@ -16,3 +16,10 @@ db/mysql/*.sql
 *.nav
 *.snm
 *.vrb
+
+# Experiment results (raw CSVs)
+scripts/results/
+
+# Python cache
+__pycache__/
+*.pyc

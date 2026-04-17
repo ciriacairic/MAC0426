@@ -33,7 +33,45 @@ docker compose ps
 
 ## Executando os experimentos
 
-> **Ainda não implementado.**
+```bash
+# Rodar todos os experimentos (todos os cenários, todas as queries, ambos os SGBDs)
+docker compose run --rm runner python run_experiments.py
+
+# Rodar apenas um cenário
+docker compose run --rm runner python run_experiments.py --scenario btree
+
+# Rodar apenas um SGBD
+docker compose run --rm runner python run_experiments.py --sgbd postgresql
+
+# Rodar uma query específica
+docker compose run --rm runner python run_experiments.py --query test_select
+
+# Alterar número de execuções e warmup
+docker compose run --rm runner python run_experiments.py --runs 30 --warmup 2
+```
+
+Os resultados são salvos em `scripts/results/` como CSVs com timestamp no nome.
+
+### Cenários disponíveis
+
+| Cenário | Descrição |
+|---|---|
+| `no_index` | Nenhum índice além das PKs |
+| `btree` | Índices B-tree em atributos não-chave selecionados |
+| `hash` | Índices hash (apenas PostgreSQL; MySQL roda equivalente ao `no_index`) |
+| `fulltext` | Índices full-text em `Posts.Body` e `Users.AboutMe` |
+
+### Colunas do CSV de saída
+
+| Coluna | Descrição |
+|---|---|
+| `sgbd` | `postgresql` ou `mysql` |
+| `scenario` | Cenário de índice utilizado |
+| `query` | Nome da query executada |
+| `run` | Número da execução (começa em 1) |
+| `time_s` | Tempo de execução em segundos |
+| `cpu_percent` | Uso de CPU do container durante a execução (null se Docker indisponível) |
+| `mem_mb` | Uso de memória do container em MB (null se Docker indisponível) |
 
 ## Estrutura do projeto
 
@@ -48,9 +86,21 @@ db/
 scripts/
   Dockerfile
   requirements.txt
-  queries/      # scripts por categoria de operação (não implementado)
-  results/      # CSVs com tempos de execução (não implementado)
-  plots/        # gráficos gerados (não implementado)
+  run_experiments.py      # orquestra todos os experimentos
+  runner/
+    config.py             # leitura de variáveis de ambiente
+    connections.py        # conexões com PostgreSQL e MySQL
+    executor.py           # execução e medição de queries
+    metrics.py            # coleta de CPU e RAM via Docker SDK
+  queries/
+    pk_lookup.py          # queries de busca por chave primária
+  scenarios/
+    no_index.py           # sem índices extras
+    btree.py              # índices B-tree
+    hash.py               # índices hash
+    fulltext_idx.py       # índices full-text
+  results/                # CSVs com tempos de execução (gerado em runtime)
+  plots/                  # gráficos gerados (a implementar)
 docker-compose.yml
-.env
+.env                      # credenciais e portas
 ```
